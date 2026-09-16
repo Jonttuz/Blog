@@ -18,7 +18,7 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
-        timeout(time: 180, unit: 'MINUTES')   // first NVD download can be slow
+        timeout(time: 180, unit: 'MINUTES')  // first NVD download can take over an hour
     }
 
     environment {
@@ -54,14 +54,14 @@ pipeline {
 
         stage('SCA: OWASP Dependency-Check') {
             steps {
-                // NVD API key is read from Jenkins Credentials, never stored in Git.
-                // Without a key: remove withCredentials and the --nvdApiKey argument.
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck(
-                        odcInstallation: 'dependency-check',
-                        additionalArguments: "--scan . --out ${REPORT_DIR} --format HTML --format XML --prettyPrint --nvdApiKey ${NVD_API_KEY}"
-                    )
-                }
+                // NVD API key is read by the plugin from Jenkins Credentials (Secret text),
+                // so it is never stored in Git or interpolated into the command line.
+                // Without a key: remove the nvdCredentialsId line.
+                dependencyCheck(
+                    odcInstallation: 'dependency-check',
+                    nvdCredentialsId: 'nvd-api-key',
+                    additionalArguments: "--scan . --out ${REPORT_DIR} --format HTML --format XML --prettyPrint"
+                )
             }
             post {
                 always {
