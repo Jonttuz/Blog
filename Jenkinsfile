@@ -18,7 +18,7 @@ pipeline {
 
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
-        timeout(time: 90, unit: 'MINUTES')   // first NVD download can be slow
+        timeout(time: 180, unit: 'MINUTES')   // first NVD download can be slow
     }
 
     environment {
