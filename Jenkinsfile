@@ -78,7 +78,7 @@ pipeline {
                     docker run --rm \
                       -v "$WORKSPACE":/src:ro \
                       -v trivy-cache:/root/.cache/ \
-                      "$TRIVY_IMAGE" fs --scanners vuln,secret,misconfig --format table /src \
+                      "$TRIVY_IMAGE" fs --timeout 30m --scanners vuln,secret,misconfig --format table /src \
                       > "$REPORT_DIR/trivy-fs-report.txt"
                 '''
                 // Quality gate: CRITICAL findings mark the build UNSTABLE
@@ -87,7 +87,7 @@ pipeline {
                         docker run --rm \
                           -v "$WORKSPACE":/src:ro \
                           -v trivy-cache:/root/.cache/ \
-                          "$TRIVY_IMAGE" fs --scanners vuln,secret --severity CRITICAL --exit-code 1 /src
+                          "$TRIVY_IMAGE" fs --timeout 30m --scanners vuln,secret --severity CRITICAL --exit-code 1 /src
                     '''
                 }
             }
@@ -111,7 +111,7 @@ pipeline {
                     docker run --rm \
                       -v /var/run/docker.sock:/var/run/docker.sock \
                       -v trivy-cache:/root/.cache/ \
-                      "$TRIVY_IMAGE" image --format table "$IMAGE_NAME:$IMAGE_TAG" \
+                      "$TRIVY_IMAGE" image --timeout 30m --format table "$IMAGE_NAME:$IMAGE_TAG" \
                       > "$REPORT_DIR/trivy-image-report.txt"
                 '''
                 catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
@@ -119,7 +119,7 @@ pipeline {
                         docker run --rm \
                           -v /var/run/docker.sock:/var/run/docker.sock \
                           -v trivy-cache:/root/.cache/ \
-                          "$TRIVY_IMAGE" image --severity CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE_NAME:$IMAGE_TAG"
+                          "$TRIVY_IMAGE" image --timeout 30m --severity CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE_NAME:$IMAGE_TAG"
                     '''
                 }
             }
