@@ -18,13 +18,14 @@ beforeAll(async () => {
 afterAll(async () => {
     await closeDb();
 });
+//tes 9.
 test('the admin page is denied to anonymous visitors', async () => {
     const res = await request(app).get('/admin');
 
     expect(res.status).toBe(403);
     expect(res.text).toContain('Access denied');
 });
-
+//test 10.
 test('the admin page is denied to a normal logged-in user', async () => {
         const cookie = await registerAndLogin(app, 'grace', 'grace-password');
 
