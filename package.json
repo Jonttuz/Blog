@@ -3,7 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jest --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["<rootDir>/tests/setup-db.js"],
+    "testMatch": ["<rootDir>/tests/**/*.test.js"],
+    "testPathIgnorePatterns": ["/node_modules/"]
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -14,5 +21,10 @@
     "morgan": "~1.9.1",
     "pug": "^3.0.3",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "supertest": "^6.3.4"
   }
 }
