@@ -34,7 +34,7 @@ pipeline {
         // Pin these to specific versions for reproducible, trustworthy builds
         TRIVY_IMAGE    = 'aquasec/trivy:latest'
         NIKTO_IMAGE    = 'hackllc/nikto:latest'
-        NODE_IMAGE     = 'node:20'           // used to install dependencies and run the unit tests
+        NODE_IMAGE     = 'node:20-slim'           // used to install dependencies and run the unit tests
     }
 
     stages {
