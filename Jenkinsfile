@@ -33,7 +33,7 @@ pipeline {
         REPORT_DIR     = 'reports'
         // Pin these to specific versions for reproducible, trustworthy builds
         TRIVY_IMAGE    = 'aquasec/trivy:latest'
-        NIKTO_IMAGE    = 'hackllc/nikto:latest'
+        NIKTO_IMAGE    = 'ghcr.io/sullo/nikto:latest'
         NODE_IMAGE     = 'node:20-slim'           // used to install dependencies and run the unit tests
     }
 
