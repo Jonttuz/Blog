@@ -1,5 +1,6 @@
 // =====================================================================
 //  Blog – secure CI/CD pipeline
+//  Unit tests: Jest + Supertest (functional and security unit tests)
 //  Security tests:
 //    1. OWASP Dependency-Check  (SCA, source phase)
 //    2. Trivy filesystem scan    (SCA + secrets + IaC misconfig, source phase)
@@ -33,6 +34,7 @@ pipeline {
         // Pin these to specific versions for reproducible, trustworthy builds
         TRIVY_IMAGE    = 'aquasec/trivy:latest'
         NIKTO_IMAGE    = 'hackllc/nikto:latest'
+        NODE_IMAGE     = 'node:20'           // used to install dependencies and run the unit tests
     }
 
     stages {
@@ -51,6 +53,27 @@ pipeline {
         }
 
         // ---------------- SOURCE PHASE ----------------
+
+        stage('Unit tests') {
+            steps {
+                // Functional and security unit tests (Jest + Supertest) run in a Node
+                // container as the jenkins user, so node_modules stays usable and
+                // writable in the workspace for the following scanners.
+                sh '''
+                    docker run --rm \
+                      -v "$WORKSPACE":/app -w /app \
+                      -u "$(id -u):$(id -g)" -e HOME=/tmp \
+                      -e JEST_JUNIT_OUTPUT_DIR=/app/$REPORT_DIR \
+                      -e JEST_JUNIT_OUTPUT_NAME=junit.xml \
+                      "$NODE_IMAGE" sh -c "npm install --no-audit --no-fund && npx jest --ci --runInBand --reporters=default --reporters=jest-junit"
+                '''
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: "${REPORT_DIR}/junit.xml"
+                }
+            }
+        }
 
         stage('SCA: OWASP Dependency-Check') {
             steps {
