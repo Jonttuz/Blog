@@ -53,10 +53,9 @@ app.get('/new-post', (req, res) => {
   res.render('new-post', { title: 'New Post', user: req.user });
 });
 
+
 app.post('/new-post', (req, res) => {
-  if (!req.user) {
-      return res.redirect('/auth/login');
-  }
+  // DEFECT: the authentication check has been removed
   const { title, content } = req.body;
   db.run("INSERT INTO posts (title, content) VALUES (?, ?)", [title, content], (err) => {
       if (err) throw err;
