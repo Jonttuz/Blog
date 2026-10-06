@@ -54,10 +54,9 @@ app.get('/new-post', (req, res) => {
 });
 
 app.post('/new-post', (req, res) => {
-  if (!req.user) {
-      return res.redirect('/auth/login');
-  }
+  // DEFECT: the authentication check has been removed
   const { title, content } = req.body;
+  
   db.run("INSERT INTO posts (title, content) VALUES (?, ?)", [title, content], (err) => {
       if (err) throw err;
       res.redirect('/');
@@ -65,8 +64,7 @@ app.post('/new-post', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  // DEFECT: any logged-in user now passes this check
-  if (!req.user) {
+  if (!req.user || req.user.username !== 'admin') { 
       return res.status(403).send('Access denied');
   }
   res.render('admin', { title: 'Admin Page', user: req.user });
