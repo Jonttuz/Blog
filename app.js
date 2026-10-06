@@ -65,7 +65,8 @@ app.post('/new-post', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  if (!req.user || req.user.username !== 'admin') {
+  // DEFECT: any logged-in user now passes this check
+  if (!req.user) {
       return res.status(403).send('Access denied');
   }
   res.render('admin', { title: 'Admin Page', user: req.user });
